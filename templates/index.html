@@ -1,11 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Lab Drone - GCS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    
+    <div class="container">
+        <header>
+            <div class="logo">Welcome to Lab Drone</div>
+            <nav>
+                <a href="#">Info</a>
+                <a href="#">LAB</a>
+                <a href="#">GCS</a>
+                <button>로그인</button>
+            </nav>
+        </header>
+
+        <h1>GCS - Drone</h1>
+
+        <div>
+            <div class="map-title">
+                <div class="map-icon">🗺️</div>
+                <h3>드론의 현재위치 정보</h3>
+            </div>
+            <div class="map-container">
+                <div class="map-section">
+                    <div id="map" class="map"></div>
+                    <div class="map-inputs">
+                        <input type="text" value="위도:129.XXX" readonly>
+                        <input type="text" value="경도:35.XXXXX" readonly>
+                        <button>Load</button>
+                    </div>
+                </div>
+                <div class="status-container">
+                    <div class="status-grid">
+                        <div class="status-box">
+                            <h4>배터리 상태</h4>
+                            <p>82% <span>🔋</span></p>
+                        </div>
+                        <div class="status-box">
+                            <h4>GPS 상태</h4>
+                            <p>상태: 양호 <span>📍</span></p>
+                        </div>
+                        <div class="status-box">
+                            <h4>텔레메트리 상태</h4>
+                            <p>상태: 양호 <span>📡</span></p>
+                        </div>
+                        <div class="status-box">
+                            <h4>컴패니언 컴퓨터</h4>
+                            <p>Raspberry Pi 4 <span>💻</span></p>
+                        </div>
+                    </div>
+                    <img src="{{ url_for('static', filename='images/drone.png') }}" alt="Drone" class="drone-image">
+                    <div class="drone-info">
+                        <h4>픽스 호크 드론</h4>
+                        <p>F540 교육용 드론</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;
+        b=b[c]||(b[c]={});
+        var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));
+        e.set("libraries",[...r]+"");
+        for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);
+        e.set("callback",c+".maps."+q);
+        a.src=`https://maps.${c}apis.com/maps/api/js?`+e;
+        d[q]=f;
+        a.onerror=()=>h=n(Error(p+" could not load."));
+        a.nonce=m.querySelector("script[nonce]")?.nonce||"";
+        m.head.append(a)}));
+        d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+            key: "{{API_key}}",
+            v: "weekly",
+            // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+            // Add other bootstrap parameters as needed, using camel case.
+        });
+
+            // DOMContentLoaded 이벤트로 구글 맵 API 로딩 후 initMap 호출
+        window.addEventListener("DOMContentLoaded", (event) => {
+            initMap();
+        });
+    </script>
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+
+        socket.on('server_response', function(data) {
+            document.getElementById('data').innerHTML = 'Received: ' + data.value;
+        });
+    </script>
+
 </body>
 </html>

@@ -1,0 +1,130 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.logo {
+    font-weight: bold;
+}
+nav a {
+    margin-left: 1rem;
+    text-decoration: none;
+    color: #666;
+}
+nav button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+h1 {
+    font-size: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+.map-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.map-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+}
+.map-container {
+    display: flex;
+    gap: 1rem;
+}
+.map-section {
+    width: 50%;
+}
+.map {
+    width: 100%;
+    height: 22.7rem;
+    border-radius: 8px;
+}
+.map-inputs {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+.map-inputs input {
+    box-sizing: border-box;
+    width: 100%;
+}
+.map-inputs input, .map-inputs button {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+.map-inputs button {
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+.status-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.status-box {
+    background-color: #f0f0f0;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.status-box h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.status-box p {
+    margin: 0;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+}
+.drone-image {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+}
+.drone-info {
+    text-align: left;
+}
+.drone-info h4 {
+    margin: 0.5rem 0 0 0;
+    font-size: 1rem;
+}
+.drone-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #666;
+}
