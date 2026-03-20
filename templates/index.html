@@ -29,8 +29,9 @@
                 <div class="map-section">
                     <div id="map" class="map"></div>
                     <div class="map-inputs">
-                        <input type="text" value="위도:129.XXX" readonly>
-                        <input type="text" value="경도:35.XXXXX" readonly>
+                        <!-- placeholder 사용: readonly input에 value로 넣으면 실제 값처럼 보임 -->
+                        <input type="text" id="lat-display" placeholder="위도: --" readonly>
+                        <input type="text" id="lon-display" placeholder="경도: --" readonly>
                         <button>Load</button>
                     </div>
                 </div>
@@ -38,19 +39,19 @@
                     <div class="status-grid">
                         <div class="status-box">
                             <h4>배터리 상태</h4>
-                            <p>82% <span>🔋</span></p>
+                            <p><span id="battery-value">--</span>% <span>🔋</span></p>
                         </div>
                         <div class="status-box">
                             <h4>GPS 상태</h4>
-                            <p>상태: 양호 <span>📍</span></p>
+                            <p>위성: <span id="gps-satellites">--</span>개 <span>📍</span></p>
                         </div>
                         <div class="status-box">
                             <h4>텔레메트리 상태</h4>
-                            <p>상태: 양호 <span>📡</span></p>
+                            <p id="telemetry-status">연결 대기 중 <span>📡</span></p>
                         </div>
                         <div class="status-box">
                             <h4>컴패니언 컴퓨터</h4>
-                            <p>Raspberry Pi 4 <span>💻</span></p>
+                            <p>Raspberry Pi 3B <span>💻</span></p>
                         </div>
                     </div>
                     <img src="{{ url_for('static', filename='images/drone.png') }}" alt="Drone" class="drone-image">
@@ -61,8 +62,12 @@
                 </div>
             </div>
         </div>
+        <!-- server_response 출력 영역 -->
+        <p id="data" style="margin-top:1rem; color:#666; font-size:0.8rem;"></p>
     </div>
 
+    <!-- Socket.IO 클라이언트 (누락되어 io is not defined 오류 발생하던 것 수정) -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
         (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;
@@ -79,12 +84,10 @@
         d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
             key: "{{API_key}}",
             v: "weekly",
-            // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
-            // Add other bootstrap parameters as needed, using camel case.
         });
 
-            // DOMContentLoaded 이벤트로 구글 맵 API 로딩 후 initMap 호출
-        window.addEventListener("DOMContentLoaded", (event) => {
+        // DOMContentLoaded에서만 initMap 호출 (script.js의 중복 호출 제거됨)
+        window.addEventListener("DOMContentLoaded", function() {
             initMap();
         });
     </script>
@@ -94,10 +97,32 @@
 
         socket.on('connect', function() {
             console.log('Connected to server');
+            document.getElementById('telemetry-status').innerHTML = '상태: 양호 <span>📡</span>';
+        });
+
+        socket.on('disconnect', function() {
+            document.getElementById('telemetry-status').innerHTML = '연결 끊김 <span>📡</span>';
         });
 
         socket.on('server_response', function(data) {
             document.getElementById('data').innerHTML = 'Received: ' + data.value;
+        });
+
+        // 드론 실시간 텔레메트리 수신
+        socket.on('drone_data', function(data) {
+            if (data.type === 'position') {
+                document.getElementById('lat-display').value = '위도: ' + data.lat.toFixed(6);
+                document.getElementById('lon-display').value = '경도: ' + data.lon.toFixed(6);
+                // 지도 마커 업데이트
+                if (typeof updateMapMarker === 'function') {
+                    updateMapMarker(data.lat, data.lon);
+                }
+            } else if (data.type === 'status') {
+                var pct = data.battery >= 0 ? data.battery : '--';
+                document.getElementById('battery-value').textContent = pct;
+            } else if (data.type === 'gps') {
+                document.getElementById('gps-satellites').textContent = data.satellites_visible;
+            }
         });
     </script>
 
